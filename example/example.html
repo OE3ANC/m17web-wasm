@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>web17-client</title>
+</head>
+<body>
+
+<script lang="ts" type="module">
+    import init, { decode } from '../pkg/m17web_wasm.js';
+    await init();
+    let audioCtx;
+
+    function base64ToUInt8Array(base64) {
+        let raw = window.atob(base64);
+        let rawLength = raw.length;
+        let array = new Uint8Array(new ArrayBuffer(rawLength));
+        for (let i = 0; i < rawLength; i++) {
+            array[i] = raw.charCodeAt(i);
+        }
+        return array;
+    }
+
+    function createCtx() {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        let val = document.getElementById("text").value;
+        let dec = decode(base64ToUInt8Array(val));
+
+        playResult(dec);
+    }
+
+    function playResult(result) {
+        console.log(result);
+        let source = audioCtx.createBufferSource();
+        let buffer = audioCtx.createBuffer(1, result.length, 8000);
+        let data = buffer.getChannelData(0);
+        for (let i = 0; i < result.length; i++) {
+            data[i] = result[i] / 32768.0;
+        }
+        source.buffer = buffer;
+        source.connect(audioCtx.destination);
+        source.start();
+    }
+
+    document.getElementById("play").addEventListener("click", createCtx);
+
+</script>
+
+<label for="text">Basc64 encoded 3200 bps codec2</label><textarea id="text" cols="30" rows="10">zIhZa563vUzAAGtblPRhecAAP0G2V3WZwoA/QH4eoF/AAHM5MnX0u4MA8RsyPeW6AADxE1JUYZjBgFR7WvQ5CkGAX1PezDPFgIjUaRbVvSQJMFpBFsSzZcA03Hva9LlkE7SeQxjlmoUJMYnDWNyTxEC0mFvI/JOGzbTZQ9rclyzENFta2F+apoQ831KIzbMkCrTaW9r0l6dCPP56iN2zZAW02UOazZ/nDLWbepjmk2cEMP56mMwT5wG9qHOYpR9FHTWry1rcF8QJKZ5TmPflZRj/28kad+nkQCycIprVKSTAOeh6mOWTR0E9mFvazTNCByGeY9T0LaZH/ZjLmtf5g8BgiVJe1qsnGSCrVhp3PoIJpbhLmkW35wgsnnuY8quHGaUuU9zXtqcHIZ5qmsW/7A+hL3Ocxj/PDaXrS97FM+QEoSt6mnW/rw8kmnNcx70JwSnoI5zVk82DqLp7mve3LYW8+Vue1J/lBai6y9zTMy8OtKvSivQRBUy02cPazx8tCziaS9jXKQRAUWRK3lQZ+Bl55XaEto9LD+CpVgrUB4vP0IZ+2tSJHcFJhRfIzY28zc2FH5rcBxvPWOwW3t0PS9Hww87a9Irl0fzD1lj0nqXS7MciNHczStEoxnIepLPH06zGu9z3E00M9etbcCSbCAJ9m1rYxIoij3mZ295FiqYPUSXbXMyJL8d1pEEctZHLzN2nY8u1PcnG2cdTGYSXz8TQjHMbkqkuxWzlWx6cH+/DaYVjz5wVC87ohCNN9hEpzmSEIx/jMUjLaYc7F7MxucNkhTMRkaSKwe2GK1WxpbjBeaJzz6DszsL9oiYYsezEwnCHNQhD4KXGVaIlTsO5osJsxS/axZEG36RFPtZMKc2I/O5LlvYRq8Nd50LYkzGIxtmMLt6gkU7GVI0+mqGRa8BVrBYesRvJRHDqPhzymQ3CXI4/mtMZL4vwqj6YoxktQXHsLprSmW5DWcxm2vMdTcPNZWbY4xkOxk3MNt7jFS7CSe4yGrKZb8LZqhILg5lKw92LEg6CGS/DXYo6GJEd7sNcizoa4onLxlyKK5DGjyTGUK46FFcd6cJ87TYUVREuwuzMKtb2mSjDoEVz1uSbK8osZ9PU3LMMyThnQh5PMwXJKGfyntyzLc5or3OW1TGuQnFmS5DHnciGfI7GDOUPWIBpjHbe8oV8L/SlPRp1ifspcYI92ncLbsVwpBeQBZvvxNGnOnRmnenP0ORz/iaVyNZsQsO2RRkr1yBDwpLVkwTTqEHKHtyTp9K4QfpcXRMl17hCs5rNNyXWvMKbXs0TxcK8xaOazBfMxjzN415OkwTEPMnb3n6fZMK023rYzDPFh7y7ath+NcUCPKjzGs8VThg1yCLYzREERDSIctpMNw0ENKhDmPQzDA412HvazDllQLTY09jUsSXFtNpyyH6SooW0/mLYT7MHn7S6W4jPFSVANLt6mOWRLcU0WUKYX7NlGzS9KsjUMyRNNNhCmNQzBQU0+1OazDNEwjRfQ1jklyTCtN5biM8fDAK0/lta5BUMlLTaUpjdnQwFvPpDiNyfxUW0W9uIzRuGRzTZSsrcsSSUvLp6yt2bLUK02kuYTTNHhbS5SohNtQyMNLtbmky3BEY0umLYzZfFhbTeS4r1PywKtLp6iKSbLBu1mmKYzJfFCTSaW8j9nw0MtNxT2F4bxI20WttY3IvtR7D+eshNl+WFtL5imM0xLwc0u3uaT5fFDjWbapjnMQQUtLpTmNyTDAM0/2rI3JFsMTS7YkjPFQwMtP17ivy1bEY0mVPe3BckmzX5KtjUEwwftJly2NSzRwE8/lvY9bNEwLj9e9rPNWXDOP5LGk4xBsK03kPI3ZUExjzfc8jtFyWENLtLivwzJQABQwnknAghAAFDCeScCCE=</textarea>
+<button id="play">▶️</button>
+
+</body>
+</html>
