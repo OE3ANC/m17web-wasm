@@ -2,7 +2,7 @@
 name = "m17web-wasm"
 version = "0.1.0"
 authors = ["Andreas Schmidberger <mail@oe3anc.at>"]
-edition = "2024"
+edition = "2018"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
