@@ -79,7 +79,6 @@ class M17webPlayer extends HTMLElement {
                 ws.close();
                 playerActive = false;
                 playerSymbol = "▶";
-                return;
             } else {
                 playerActive = true;
                 if (!audioCtx) {
@@ -87,7 +86,6 @@ class M17webPlayer extends HTMLElement {
                 }
                 connectToServer();
                 playerSymbol = "⏸";
-
             }
             shadow.getElementById("playerButton").textContent = playerSymbol;
         }
@@ -118,6 +116,7 @@ class M17webPlayer extends HTMLElement {
         const player_logo = document.createElement("img");
         player_logo.src = "img/m17glow.png";
         player_logo.setAttribute("id", "playerLogo");
+        player_logo.title = "M17web Player by OE3ANC";
         logo.appendChild(player_logo);
 
 
