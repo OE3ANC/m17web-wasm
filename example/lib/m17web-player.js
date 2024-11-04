@@ -188,7 +188,7 @@ class M17webPlayer extends HTMLElement {
               width: 10px;
               height: 10px;
               border-radius: 50%; 
-              background: inherit;
+              background: grey;
               cursor: pointer;
             }
             
